@@ -1,0 +1,11 @@
+Code and data for overdamped and underdamped diffusion on a ring and rare fluctuations of current and activity.
+
+N20_lam_SCGF_err.txt contains lambda, cumulant corrected SCGF and errorbars for N=20 1D WCA repelling particles biased by activity.
+
+N20_cmlt_terms.txt contains lambda, 1st, 2nd and 3rd cumulant terms (modulo statistical errors) for N=20 1D WCA repelling particles biased by activity.
+
+ldf_auxforce_overdamped.py diagonalizes tilted generator for overdamped 1D driven diffusion with a periodic potential, and computes the auxiliary force from the eigenvector.
+
+ldf_underdamped.py diagonalizes tilted generator for underdamped 1D driven diffusion with a periodic potential; based on fourier-hermite basis. This method gives ldf in a stable way but auxiliary forces don't quite work due to missing factors in the associated Fischer et.al. paper.
+
+underdamped_v-dependent_forces.txt contains coefficients for expanding the *total* auxiliary force in basis of (fourier in x)*(polynomial in v) with (2*5+1)*2 basis functions.
