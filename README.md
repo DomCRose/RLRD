@@ -4,7 +4,7 @@ This repository contains the code used to generate the results found in the corr
 
 Each folder is named after the model it contains the code for.
 
-In finite time, this includes:
+In finite time, where we learn a time-dependent dynamics producing constrained trajectories, this includes:
 + **Brownian bridges:** Brownian trajectories beginning at zero and ending and one.
 + **Multiple pathways:** A potential two global minima and two identical minimum-energy pathways. We study trajectories between these two global minima.
 + **Mueller-Brown:** A potential with two deep local minima and a third shallow local minimum between them. We study paths from the second deepest local minimum to the deepest local minimum, which pass through the shallow minimum and are approximately instantonic.
