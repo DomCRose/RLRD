@@ -12,3 +12,5 @@ In finite time, where we learn a time-dependent dynamics producing constrained t
 In infinite time, where we learn a time-homogenous dynamics in the stationary state, we consider a driven particle in a periodic potential on a ring, studying the statistics of its time-integrated velocity. We consider two cases:
 + **Overdamped:** Here the dynamical system consists of only the particle position, evolving according to a drift force and noise.
 + **Underdamped:** Here the dynamical system consists of the position evolving according to a velocity, where the velocity evolves with a drift force and noise.
+
+Each data folder is associated with a single figure in the paper.
