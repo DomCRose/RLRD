@@ -1,3 +1,13 @@
+"""
+Written by Dominic C. Rose, May 2021, dominicdrose@gmail.com
+
+Optimizes a force for the study of the time-integrated velocity of a particle on a ring,
+with a periodic potential and a constant driving force in the underdamped case.
+
+Uses an Actor-Critic algorithm, with temporal-difference errors calculated using single
+time-step segments of trajectory from a discretized diffusive simulation. Updates are done
+for each individual transition.
+"""
 import math
 import copy
 import time

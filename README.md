@@ -6,7 +6,7 @@ Each folder is named after the model it contains the code for.
 
 In finite time, where we learn a time-dependent dynamics producing constrained trajectories, this includes:
 + **Brownian bridges:** Brownian trajectories beginning at 0 and ending at 1.
-+ **Multiple pathways:** A potential with two degenerate classes of barrier-crossing trajectories.
++ **Multiple pathways:** A potential with two degenerate classes of barrier-crossing trajectories between two minima. We study the ensemble of trajectories between these two minima, finding a dynamics which samples both classes of paths equally.
 + **Mueller-Brown:** A potential with steep barriers and two minima connected by a shallow metastable intermediate well. We study diffusive trajectories going across the metastable intermediate well to go from a local to a deep global minimum.
 
 In infinite time, where we learn a time-homogenous dynamics in the stationary state, we consider a driven particle in a periodic potential on a ring, studying the statistics of its time-integrated velocity. We consider two cases:
