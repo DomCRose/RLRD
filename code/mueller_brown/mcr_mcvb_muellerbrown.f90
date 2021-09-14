@@ -9,7 +9,7 @@ double precision, parameter:: lam=10000 !bias
 integer, parameter:: Mx=21,My=21,Mt=21 !Number of basis is Mx*My*Mt
 double precision:: coeff(Mx,My,Mt,2) !coefficients for both components of force
 double precision:: omega(4),omegan(4) !4 elements are the full return, average indicator, kl div, quadratic cost
-double precision:: delomega(Mx,Mt,2),delomegan(Mx,Mt,2) !gradients of force coefficients
+double precision:: delomega(Mx,My,Mt,2),delomegan(Mx,My,Mt,2) !gradients of force coefficients
 
 !value function data structures !downstream assumes Mvx=Mx, Mvy=My, Mvt=Mt
 integer, parameter:: Mvx=21,Mvy=21,Mvt=21 !Number of basis is Mvx*Mvy*Mvt for the value function 
@@ -115,7 +115,7 @@ end if
 !Broadcast the averaged quantities from main node
 call MPI_Barrier(MPI_COMM_WORLD,ierr)
 call MPI_Bcast(omega,4,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
-call MPI_Bcast(delomega,Mx*My*Mt,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
+call MPI_Bcast(delomega,Mx*My*Mt*2,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
 call MPI_Bcast(delV,Mvx*Mvy*Mvt,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
 call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
@@ -129,9 +129,9 @@ if (my_id==0) then
     if (modulo(loopcount,50)==0) then
     do i=1,Mx
         do j=1,My
-            write(120,'(41(2x,E15.4))') coeff(i,j,:,1)
-            write(121,'(41(2x,E15.4))') coeff(i,j,:,2)
-            write(130,'(41(2x,E15.4))') coeffV(i,j,:)
+            write(120,'(21(2x,E15.4))') coeff(i,j,:,1)
+            write(121,'(21(2x,E15.4))') coeff(i,j,:,2)
+            write(130,'(21(2x,E15.4))') coeffV(i,j,:)
         end do
     end do
     end if
@@ -158,7 +158,7 @@ implicit none
 integer, intent(in):: Mx,My,Mt,Mvx,Mvy,Mvt
 double precision, intent(in):: coeff(Mx,My,Mt,2),lam,coeffV(Mvx,Mvy,Mvt)
 integer, intent(in):: my_id,npercorecount,loopcount
-double precision:: omega(3),delomega(Mx,My,Mt,2),delV(Mvx,Mvy,Mvt)
+double precision:: omega(4),delomega(Mx,My,Mt,2),delV(Mvx,Mvy,Mvt)
 
 !trajectory parameters
 integer, parameter:: steps=1500 !total number of timesteps
@@ -169,7 +169,7 @@ double precision,parameter:: pi=4.0d0*atan(1.0d0)
 
 !force calc, gradient structures
 double precision,dimension(2):: x0,x1,x2,delx !holders for current position and jump in every timestep
-double precision,dimension(2):: F1 !force
+double precision,dimension(2):: F1,F0 !force
 double precision:: delu(Mx,My,Mt,2) !contains partial derivative of force w.r.t. parameters, last rank is component
 double precision:: gaussianx(Mx,2),gaussiany(My,2),gaussiant(Mt,2) !contains centers and variances of the gaussians for force basis
 double precision:: q(Mx,My,Mt,2),delq(Mx,My,Mt,2) !malliavin weight and its jump in every timestep
@@ -205,7 +205,7 @@ intgradV=0.0d0
 
 !Define gaussian basis centers and variance
 do j=1,Mt
-  gaussiant(j,1)=1+(j-1)*steps*1.0d0/(Mt-1) !1,1+2sigamt,1+4sigmat,...,1+2(Mt-1)sigmat which is steps+1
+  gaussiant(j,1)=1+(j-1)*steps*1.0d0/(Mt-1) 
 end do
 gaussiant(:,2)=((steps*1.0d0/(Mt-1))/2.0d0)**2 !variance
 
@@ -342,15 +342,15 @@ yc(4)=1
 
 expfac=Acap*exp(a*(x1(1)-xc)**2+b*(x1(1)-xc)*(x1(2)-yc)+c*(x1(2)-yc)**2)
 pot=sum(expfac)
-F0(1)=-prop*sum(expfac*(2.0d0*a*(x1(1)-xc)+b*(x1(2)-yc)))
-F0(2)=-prop*sum(expfac*(2.0d0*c*(x1(2)-yc)+b*(x1(1)-xc)))
+F0(1)=-sum(expfac*(2.0d0*a*(x1(1)-xc)+b*(x1(2)-yc)))
+F0(2)=-sum(expfac*(2.0d0*c*(x1(2)-yc)+b*(x1(1)-xc)))
 
 do i=1,Mx
   do j=1,My
     do k=1,Mt
         !For the (i,j,k)th Gaussian, the individual terms in the force gradient and value function gradient...
-        delu(i,j,k,1)=exp(-(x-gaussianx(i,1))**2/(2.0d0*gaussianx(i,2))&
-        &   -(y-gaussiany(j,1))**2/(2.0d0*gaussiany(j,2))-(stepcount-gaussiant(k,1))**2/(2.0d0*gaussiant(k,2)))
+        delu(i,j,k,1)=exp(-(x1(1)-gaussianx(i,1))**2/(2.0d0*gaussianx(i,2))&
+        &   -(x1(2)-gaussiany(j,1))**2/(2.0d0*gaussiany(j,2))-(stepcount-gaussiant(k,1))**2/(2.0d0*gaussiant(k,2)))
         delu(i,j,k,2)=delu(i,j,k,1)
         gradV(i,j,k)=delu(i,j,k,1)
 
