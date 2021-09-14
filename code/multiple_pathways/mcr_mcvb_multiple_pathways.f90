@@ -9,7 +9,7 @@ double precision, parameter:: lam=500 !bias
 integer, parameter:: Mx=21,My=21,Mt=41 !Number of basis is Mx*My*Mt
 double precision:: coeff(Mx,My,Mt,2) !coefficients for both components of force
 double precision:: omega(4),omegan(4) !4 elements are the full return, average indicator, kl div, quadratic cost
-double precision:: delomega(Mx,Mt,2),delomegan(Mx,Mt,2) !gradients of force coefficients
+double precision:: delomega(Mx,My,Mt,2),delomegan(Mx,My,Mt,2) !gradients of force coefficients
 
 !value function data structures !downstream assumes Mvx=Mx, Mvy=My, Mvt=Mt
 integer, parameter:: Mvx=21,Mvy=21,Mvt=41 !Number of basis is Mvx*Mvy*Mvt for the value function 
@@ -115,7 +115,7 @@ end if
 !Broadcast the averaged quantities from main node
 call MPI_Barrier(MPI_COMM_WORLD,ierr)
 call MPI_Bcast(omega,4,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
-call MPI_Bcast(delomega,Mx*My*Mt,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
+call MPI_Bcast(delomega,Mx*My*Mt*2,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
 call MPI_Bcast(delV,Mvx*Mvy*Mvt,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
 call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
@@ -158,7 +158,7 @@ implicit none
 integer, intent(in):: Mx,My,Mt,Mvx,Mvy,Mvt
 double precision, intent(in):: coeff(Mx,My,Mt,2),lam,coeffV(Mvx,Mvy,Mvt)
 integer, intent(in):: my_id,npercorecount,loopcount
-double precision:: omega(3),delomega(Mx,My,Mt,2),delV(Mvx,Mvy,Mvt)
+double precision:: omega(4),delomega(Mx,My,Mt,2),delV(Mvx,Mvy,Mvt)
 
 !trajectory parameters
 integer, parameter:: steps=1500 !total number of timesteps
@@ -169,7 +169,7 @@ double precision,parameter:: pi=4.0d0*atan(1.0d0)
 
 !force calc, gradient structures
 double precision,dimension(2):: x0,x1,x2,delx !holders for current position and jump in every timestep
-double precision,dimension(2):: F1 !force
+double precision,dimension(2):: F1,F0 !force
 double precision:: delu(Mx,My,Mt,2) !contains partial derivative of force w.r.t. parameters, last rank is component
 double precision:: gaussianx(Mx,2),gaussiany(My,2),gaussiant(Mt,2) !contains centers and variances of the gaussians for force basis
 double precision:: q(Mx,My,Mt,2),delq(Mx,My,Mt,2) !malliavin weight and its jump in every timestep
